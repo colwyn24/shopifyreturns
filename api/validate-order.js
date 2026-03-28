@@ -18,14 +18,14 @@ export default async function handler(req, res) {
     }
 
     const response = await fetch(
-      `https://${store}/admin/api/2026-01/orders.json?name=${encodeURIComponent(name)}`,
-      {
-        headers: {
-          "X-Shopify-Access-Token": token,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  `https://${store}/admin/api/2026-01/orders.json?limit=1&query=name:${encodeURIComponent(name)} email:${encodeURIComponent(email)}`,
+  {
+    headers: {
+      "X-Shopify-Access-Token": token,
+      "Content-Type": "application/json",
+    },
+  }
+);
 
     const data = await response.json();
     const order = data.orders?.[0];
