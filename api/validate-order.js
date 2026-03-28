@@ -17,9 +17,8 @@ export default async function handler(req, res) {
       throw new Error("Missing Shopify environment variables");
     }
 
-    // Use native fetch in Node 24
     const response = await fetch(
-      `https://${store}/admin/api/2026-01/orders.json?name=${order_number}`,
+      `https://${store}/admin/api/2026-01/orders.json?name=${encodeURIComponent(name)}`,
       {
         headers: {
           "X-Shopify-Access-Token": token,
