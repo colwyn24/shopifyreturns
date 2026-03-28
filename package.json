@@ -1,12 +1,9 @@
 {
-  "name": "shopifyreturns",
+  "name": "shopify-returns-backend",
   "version": "1.0.0",
-  "description": "Shopify Returns Page",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "scripts": {},
+  "engines": {
+    "node": "18.x"
+  }
 }
