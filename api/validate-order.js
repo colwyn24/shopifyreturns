@@ -17,26 +17,33 @@ export default async function handler(req, res) {
       throw new Error("Missing Shopify environment variables");
     }
 
+    // Use Shopify REST API to search by order name
     const response = await fetch(
-  `https://${store}/admin/api/2026-01/orders.json?limit=1&query=name:${encodeURIComponent(name)} email:${encodeURIComponent(email)}`,
-  {
-    headers: {
-      "X-Shopify-Access-Token": token,
-      "Content-Type": "application/json",
-    },
-  }
-);
+      `https://${store}/admin/api/2026-01/orders.json?limit=1&name=${encodeURIComponent(name)}`,
+      {
+        headers: {
+          "X-Shopify-Access-Token": token,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const data = await response.json();
     const order = data.orders?.[0];
 
-    if (!order || order.email !== email) {
-      return res.status(404).json({ valid: false });
+    // Validate order exists and email matches
+    if (!order) {
+      return res.status(404).json({ valid: false, error: "Order not found" });
     }
 
+    if (order.email.toLowerCase() !== email.toLowerCase()) {
+      return res.status(403).json({ valid: false, error: "Email does not match order" });
+    }
+
+    // Success
     return res.status(200).json({ valid: true, order });
   } catch (err) {
-    console.error(err);
+    console.error("Validate order error:", err);
     return res.status(500).json({ error: "Internal Server Error", message: err.message });
   }
 }
