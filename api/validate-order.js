@@ -3,10 +3,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { order_number, email } = req.body;
+  const { name, email } = req.body;
 
-  if (!order_number || !email) {
-    return res.status(400).json({ error: "Missing order_number or email" });
+  if (!name || !email) {
+    return res.status(400).json({ error: "Missing name or email" });
   }
 
   try {
