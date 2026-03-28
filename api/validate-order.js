@@ -55,25 +55,7 @@ export default async function handler(req, res) {
     if (!order) {
       return res.status(404).json({ valid: false, error: "Order not found or email mismatch" });
     }
-    // Enrich each line item with product image
-    for (let i = 0; i < order.line_items.length; i++) {
-      const item = order.line_items[i];
-      if (item.variant_id) {
-        const variantRes = await fetch(
-          `https://${store}/admin/api/2026-01/variants/${item.variant_id}.json`,
-          {
-            headers: {
-              "X-Shopify-Access-Token": token,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const variantData = await variantRes.json();
-        item.image = variantData.variant.image || null; // may be null
-      } else {
-        item.image = null;
-      }
-    }
+    
     return res.status(200).json({ valid: true, order });
   } catch (err) {
     console.error(err);
