@@ -1,5 +1,3 @@
-import fetch from "node-fetch"; // npm install node-fetch if needed
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -19,6 +17,7 @@ export default async function handler(req, res) {
       throw new Error("Missing Shopify environment variables");
     }
 
+    // Use native fetch in Node 24
     const response = await fetch(
       `https://${store}/admin/api/2026-01/orders.json?name=${order_number}`,
       {
