@@ -18,32 +18,40 @@ export default async function handler(req, res) {
       throw new Error("Missing Shopify environment variables");
     }
 
-    // Build the return payload
-    const returnPayload = {
-      return: {
-        order_id: order_id,
-        items: items.map(item => ({
-          quantity: item.quantity,
-          reason: item.reason,
-          type: item.type,
-          variant_id: item.variant_id
-        }))
+    // Prepare line items for refund
+    const refundLineItems = items.map(item => ({
+      id: item.line_item_id, // Shopify line item ID
+      quantity: item.quantity
+    }));
+
+    // Prepare refund payload
+    const refundPayload = {
+      refund: {
+        notify: true, // send email to customer
+        shipping: { full_refund: false },
+        refund_line_items: refundLineItems
       }
     };
 
-    // NOTE: Shopify does not have a direct 'create return' REST endpoint.
-    // Normally you would integrate with Shopify Fulfillment API or a custom app
-    // Here, we'll just simulate return creation and generate an ID
-    const simulatedReturnId = `RET-${Math.floor(Math.random() * 1000000)}`;
+    // Trigger refund via Shopify API
+    const response = await fetch(`https://${store}/admin/api/2026-01/orders/${order_id}/refunds.json`, {
+      method: "POST",
+      headers: {
+        "X-Shopify-Access-Token": token,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(refundPayload)
+    });
 
-    // Respond with success
+    const data = await response.json();
+
+    if (data.errors) {
+      return res.status(400).json({ error: "Shopify error", details: data.errors });
+    }
+
     return res.status(200).json({
       success: true,
-      return: {
-        return_id: simulatedReturnId,
-        order_id,
-        items
-      }
+      refund: data.refund
     });
 
   } catch (err) {
